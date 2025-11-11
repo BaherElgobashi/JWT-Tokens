@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace ApiPracticing.Services
 {
@@ -87,6 +88,20 @@ namespace ApiPracticing.Services
             //authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Role = roleList.ToList();
 
+            if (user.RefreshTokens.Any(t => t.IsActive))
+            {
+                var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
+                authModel.RefreshToken = activeRefreshToken.Token;
+                authModel.RefreshTokenExpiration = activeRefreshToken.ExpiresOn;
+            }
+            else
+            {
+                var refreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpiration = refreshToken.ExpiresOn;
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+            }
 
             return authModel;
         }
@@ -115,44 +130,58 @@ namespace ApiPracticing.Services
 
 
         private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
-    {
-        var userClaims = await _userManager.GetClaimsAsync(user);
-
-        // ملاحظة: المتغير في الكود الأصلي هو 'roles' وليس 'Roles'
-        var roles = await _userManager.GetRolesAsync(user);
-        var roleClaims = new List<Claim>();
-
-        foreach (var role in roles)
         {
-            // تم تصحيح Claim Type من "Roles" إلى ClaimTypes.Role لضمان التوافق
-            roleClaims.Add(new Claim(ClaimTypes.Role, role));
-        }
+            var userClaims = await _userManager.GetClaimsAsync(user);
 
-        var claims = new List<Claim>
+            // ملاحظة: المتغير في الكود الأصلي هو 'roles' وليس 'Roles'
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = new List<Claim>();
+
+            foreach (var role in roles)
+            {
+                // تم تصحيح Claim Type من "Roles" إلى ClaimTypes.Role لضمان التوافق
+                roleClaims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var claims = new List<Claim>
     {
         new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         new Claim(JwtRegisteredClaimNames.Email, user.Email),
         new Claim("uid", user.Id)
     }
-        .Union(userClaims)
-        .Union(roleClaims);
+            .Union(userClaims)
+            .Union(roleClaims);
 
-        // افتراض أن _jwt هو كائن إعدادات JWT المحقون
-        var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
-        var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            // افتراض أن _jwt هو كائن إعدادات JWT المحقون
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
+            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-        var jwtSecurityToken = new JwtSecurityToken(
-            issuer: _jwt.Issuer,
-            audience: _jwt.Audience,
-            claims: claims,
-            expires: DateTime.Now.AddDays(_jwt.DurationInDays), // تم افتراض أن DurationInDays موجود في كائن الإعدادات _jwt
-            signingCredentials: signingCredentials
-        );
+            var jwtSecurityToken = new JwtSecurityToken(
+                issuer: _jwt.Issuer,
+                audience: _jwt.Audience,
+                claims: claims,
+                expires: DateTime.Now.AddDays(_jwt.DurationInDays), // تم افتراض أن DurationInDays موجود في كائن الإعدادات _jwt
+                signingCredentials: signingCredentials
+            );
 
-        return jwtSecurityToken;
-    }
+            return jwtSecurityToken;
+        }
 
         
+        
+        private RefreshToken GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var generator = new RNGCryptoServiceProvider();
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber),
+                ExpiresOn = DateTime.UtcNow.AddDays(10),
+                CreatedOn = DateTime.UtcNow
+
+
+            };
+        }
     }
 }
