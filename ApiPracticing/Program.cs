@@ -153,7 +153,8 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidAudience = builder.Configuration["JWT:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+        ClockSkew = TimeSpan.Zero
     };
 });
 
@@ -191,12 +192,12 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // مهم: فعل Swagger هنا — لا تقيده بالـ env أثناء التجربة
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+
+if (app.Environment.IsDevelopment())
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiPracticing v1");
-    c.RoutePrefix = "swagger"; // أو "" لجعلها صفحة البداية
-});
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
