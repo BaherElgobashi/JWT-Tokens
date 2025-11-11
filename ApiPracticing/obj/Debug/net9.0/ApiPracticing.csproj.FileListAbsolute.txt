@@ -270,7 +270,6 @@ D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\staticwebassets.development.json
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\ApiPract.C8143633.Up2Date
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\ApiPracticing.dll
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\refint\ApiPracticing.dll
@@ -280,3 +279,4 @@ D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Asp.net Revision\2.Practicing\ApiPracticing Solution\ApiPracticing\obj\Debug\net9.0\ApiPracticing.sourcelink.json
