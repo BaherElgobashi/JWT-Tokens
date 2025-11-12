@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiPracticing.Services
 {
@@ -126,7 +127,24 @@ namespace ApiPracticing.Services
             //return "Something went Wrong";
         }
 
+        public async Task<AuthModel> RefreshTokenAsync(string token)
+        {
+            var authModel = new AuthModel();
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+            if (user == null)
+            {
+                authModel.IsAuthenticated = false;
+                authModel.Message = "Invalid Token";
+            }
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
 
+            if (!refreshToken.IsActive)
+            {
+                authModel.IsAuthenticated = false;
+                authModel.Message = "Inactive Token";
+            }
+            return authModel;
+        }
 
 
         private async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser user)
@@ -167,6 +185,8 @@ namespace ApiPracticing.Services
 
             return jwtSecurityToken;
         }
+
+
 
         
         

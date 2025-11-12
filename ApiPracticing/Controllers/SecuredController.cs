@@ -11,7 +11,7 @@ namespace ApiPracticing.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class SecuredController : Controller
     {
         [HttpGet]
