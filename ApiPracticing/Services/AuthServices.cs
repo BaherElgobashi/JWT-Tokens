@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace ApiPracticing.Services
 {
@@ -143,6 +144,24 @@ namespace ApiPracticing.Services
                 authModel.IsAuthenticated = false;
                 authModel.Message = "Inactive Token";
             }
+            
+            // Make new RefreshToken.
+            refreshToken.RevokedOn = DateTime.UtcNow;
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshTokens.Add(newRefreshToken);
+            await _userManager.UpdateAsync(user);
+
+            // Make New JWT Token.
+            var jwtToken = await CreateJwtToken(user);
+            authModel.IsAuthenticated = true;
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            authModel.Email = user.Email;
+            authModel.UserName = user.UserName;
+            var roles = await _userManager.GetRolesAsync(user);
+            authModel.Role = roles.ToList();
+            authModel.RefreshToken = newRefreshToken.Token;
+            authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
+
             return authModel;
         }
 
