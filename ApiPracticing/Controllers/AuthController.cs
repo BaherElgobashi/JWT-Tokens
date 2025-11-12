@@ -57,6 +57,18 @@ namespace ApiPracticing.Controllers
             return Ok(model);
 
         }
+
+        [HttpGet("GetRefreshToken")]
+        public async Task<IActionResult> GetRefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            var result = await _authServices.RefreshTokenAsync(refreshToken);
+            if (!result.IsAuthenticated)
+                return BadRequest(result);
+
+            SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpiration);
+            return Ok(result);
+        }
         
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
         {
