@@ -74,6 +74,22 @@ namespace ApiPracticing.Controllers
 
         }
 
+        [HttpPost("revoke-token")]
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeToken model)
+        {
+            var token = model.Token ?? Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token is Required!");
+
+            var result = await _authServices.RevokeTokenAsync(token);
+
+            if (!result)
+                return BadRequest("Token is Invalid!");
+
+            return Ok();
+            
+        }
+
         
         
         private void SetRefreshTokenInCookie(string refreshToken, DateTime expires)
