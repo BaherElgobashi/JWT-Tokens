@@ -60,7 +60,7 @@ namespace ApiPracticing.Services
             return new AuthModel
             {
                 Email = user.Email,
-                //ExpiresOn = jwtSecurityToken.ValidTo,
+                ExpiresOn = jwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
                 Role = new List<string> { "User"},
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
@@ -87,7 +87,7 @@ namespace ApiPracticing.Services
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             authModel.Email = user.Email;
             authModel.UserName = user.UserName;
-            //authModel.ExpiresOn = jwtSecurityToken.ValidTo;
+            authModel.ExpiresOn = jwtSecurityToken.ValidTo;
             authModel.Role = roleList.ToList();
 
             if (user.RefreshTokens.Any(t => t.IsActive))

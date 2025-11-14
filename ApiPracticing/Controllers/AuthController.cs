@@ -31,7 +31,7 @@ namespace ApiPracticing.Controllers
 
         }
         
-        [HttpGet("GetRefreshToken")]
+        [HttpGet("refreshToken")]
         public async Task<IActionResult> GetRefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
@@ -74,7 +74,7 @@ namespace ApiPracticing.Controllers
 
         }
 
-        [HttpPost("revoke-token")]
+        [HttpPost("revokeToken")]
         public async Task<IActionResult> RevokeToken([FromBody] RevokeToken model)
         {
             var token = model.Token ?? Request.Cookies["refreshToken"];
@@ -86,7 +86,7 @@ namespace ApiPracticing.Controllers
             if (!result)
                 return BadRequest("Token is Invalid!");
 
-            return Ok();
+            return Ok("Token Revoked Successfully");
             
         }
 
